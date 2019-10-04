@@ -21,33 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package com.djrapitops.extension;
 
-import com.djrapitops.plan.extension.DataExtension;
-import com.djrapitops.plan.extension.extractor.ExtensionExtractor;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import ch.dkrieger.coinsystem.core.player.CoinPlayer;
+import ch.dkrieger.coinsystem.spigot.event.BukkitCoinPlayerCoinsChangeEvent;
+import ch.dkrieger.coinsystem.spigot.event.BukkitCoinPlayerColorSetEvent;
+import com.djrapitops.plan.extension.Caller;
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 
-/**
- * Test for the implementation of the new extension
- *
- * @author Rsl1122
- */
-class ExtensionImplementationTest {
+public class DKCoinsBukkitDKCListener implements DKCListener, Listener {
 
-    private ExtensionExtractor extractor;
+    private final Caller caller;
 
-    @BeforeEach
-    void prepareExtractor() {
-        DataExtension extension = new DKCoinsExtension();
-        extractor = new ExtensionExtractor(extension);
+    public DKCoinsBukkitDKCListener(Caller caller) {
+        this.caller = caller;
     }
 
-    @Test
-    @DisplayName("API is implemented correctly")
-    void noImplementationErrors() {
-        extractor.validateAnnotations();
+    @Override
+    public void register() {
+        Plugin plan = Bukkit.getPluginManager().getPlugin("Plan");
+        Bukkit.getPluginManager().registerEvents(this, plan);
     }
 
+    @EventHandler
+    public void onPlayerCoinsChange(BukkitCoinPlayerCoinsChangeEvent event) {
+        CoinPlayer coinPlayer = event.getCoinPlayer();
+        caller.updatePlayerData(coinPlayer.getUUID(), coinPlayer.getName());
+    }
+
+    @EventHandler
+    public void onPlayerColorSet(BukkitCoinPlayerColorSetEvent event) {
+        CoinPlayer coinPlayer = event.getPlayer();
+        caller.updatePlayerData(coinPlayer.getUUID(), coinPlayer.getName());
+    }
 }
