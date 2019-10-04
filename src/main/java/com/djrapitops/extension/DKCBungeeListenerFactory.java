@@ -21,33 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package com.djrapitops.extension;
 
-import com.djrapitops.plan.extension.DataExtension;
-import com.djrapitops.plan.extension.extractor.ExtensionExtractor;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import com.djrapitops.plan.extension.Caller;
 
-/**
- * Test for the implementation of the new extension
- *
- * @author Rsl1122
- */
-class ExtensionImplementationTest {
+public class DKCBungeeListenerFactory {
 
-    private ExtensionExtractor extractor;
-
-    @BeforeEach
-    void prepareExtractor() {
-        DataExtension extension = new DKCoinsExtension();
-        extractor = new ExtensionExtractor(extension);
+    static DKCListener createBungeeListener(Caller caller) {
+        return new DKCoinsBungeeDKCListener(caller);
     }
-
-    @Test
-    @DisplayName("API is implemented correctly")
-    void noImplementationErrors() {
-        extractor.validateAnnotations();
-    }
-
 }
