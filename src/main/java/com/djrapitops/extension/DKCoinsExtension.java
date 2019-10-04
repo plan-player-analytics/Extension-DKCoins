@@ -27,6 +27,7 @@ import ch.dkrieger.coinsystem.core.CoinSystem;
 import ch.dkrieger.coinsystem.core.player.CoinPlayer;
 import com.djrapitops.plan.extension.CallEvents;
 import com.djrapitops.plan.extension.DataExtension;
+import com.djrapitops.plan.extension.NotReadyException;
 import com.djrapitops.plan.extension.annotation.*;
 import com.djrapitops.plan.extension.icon.Color;
 import com.djrapitops.plan.extension.icon.Family;
@@ -58,16 +59,6 @@ public class DKCoinsExtension implements DataExtension {
         return Optional.ofNullable(getCoinSystem().getPlayerManager().getPlayer(playerUUID));
     }
 
-    @BooleanProvider(
-            text = "",
-            hidden = true,
-            conditionName = "playerLoaded"
-    )
-    public boolean playerLoaded(UUID playerUUID) {
-        return getCoinPlayer(playerUUID).isPresent();
-    }
-
-    @Conditional("playerLoaded")
     @NumberProvider(
             text = "Coins",
             description = "The amount of coins the player has on DKCoins",
@@ -77,11 +68,10 @@ public class DKCoinsExtension implements DataExtension {
     )
     public long coins(UUID playerUUID) {
         return getCoinPlayer(playerUUID)
-                .orElseThrow(() -> new IllegalStateException("Condition was net but player wasn't present"))
+                .orElseThrow(NotReadyException::new)
                 .getCoins();
     }
 
-    @Conditional("playerLoaded")
     @StringProvider(
             text = "Name",
             description = "The name for the player on DKCoins",
@@ -91,7 +81,7 @@ public class DKCoinsExtension implements DataExtension {
     )
     public String name(UUID playerUUID) {
         return getCoinPlayer(playerUUID)
-                .orElseThrow(() -> new IllegalStateException("Condition was net but player wasn't present"))
+                .orElseThrow(NotReadyException::new)
                 .getName();
     }
 }
