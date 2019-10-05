@@ -28,11 +28,12 @@ import ch.dkrieger.coinsystem.core.player.CoinPlayer;
 import com.djrapitops.plan.extension.CallEvents;
 import com.djrapitops.plan.extension.DataExtension;
 import com.djrapitops.plan.extension.NotReadyException;
-import com.djrapitops.plan.extension.annotation.*;
+import com.djrapitops.plan.extension.annotation.NumberProvider;
+import com.djrapitops.plan.extension.annotation.PluginInfo;
+import com.djrapitops.plan.extension.annotation.StringProvider;
 import com.djrapitops.plan.extension.icon.Color;
 import com.djrapitops.plan.extension.icon.Family;
 
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -43,20 +44,19 @@ import java.util.UUID;
 @PluginInfo(name = "DKCoins", iconName = "coins", iconFamily = Family.SOLID, color = Color.YELLOW)
 public class DKCoinsExtension implements DataExtension {
 
-    public DKCoinsExtension() {
-    }
-
     @Override
     public CallEvents[] callExtensionMethodsOn() {
-        return new CallEvents[]{ CallEvents.PLAYER_JOIN };
+        return new CallEvents[]{CallEvents.PLAYER_JOIN};
     }
 
     private CoinSystem getCoinSystem() {
         return CoinSystem.getInstance();
     }
 
-    private Optional<CoinPlayer> getCoinPlayer(UUID playerUUID) {
-        return Optional.ofNullable(getCoinSystem().getPlayerManager().getPlayer(playerUUID));
+    private CoinPlayer getCoinPlayer(UUID playerUUID) {
+        CoinPlayer player = getCoinSystem().getPlayerManager().getPlayer(playerUUID);
+        if (player == null) throw new NotReadyException();
+        return player;
     }
 
     @NumberProvider(
@@ -67,9 +67,7 @@ public class DKCoinsExtension implements DataExtension {
             iconColor = Color.GREEN
     )
     public long coins(UUID playerUUID) {
-        return getCoinPlayer(playerUUID)
-                .orElseThrow(NotReadyException::new)
-                .getCoins();
+        return getCoinPlayer(playerUUID).getCoins();
     }
 
     @StringProvider(
@@ -80,8 +78,6 @@ public class DKCoinsExtension implements DataExtension {
             iconColor = Color.GREEN
     )
     public String name(UUID playerUUID) {
-        return getCoinPlayer(playerUUID)
-                .orElseThrow(NotReadyException::new)
-                .getName();
+        return getCoinPlayer(playerUUID).getName();
     }
 }
