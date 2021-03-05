@@ -32,7 +32,7 @@ import java.util.Optional;
 /**
  * Factory for the DKCoins DataExtension.
  *
- * @author Rsl1122
+ * @author AuroraLS3
  * @author Vankka
  */
 public class DKCoinsExtensionFactory {
