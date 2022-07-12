@@ -21,49 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.djrapitops.extension;
 
+package net.playeranalytics.extension.dkcoins;
+
+import ch.dkrieger.coinsystem.core.player.CoinPlayer;
+import ch.dkrieger.coinsystem.spigot.event.BukkitCoinPlayerCoinsChangeEvent;
+import ch.dkrieger.coinsystem.spigot.event.BukkitCoinPlayerColorSetEvent;
 import com.djrapitops.plan.extension.Caller;
-import com.djrapitops.plan.extension.DataExtension;
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 
-import java.util.Optional;
+public class DKCoinsBukkitDKCListener implements DKCListener, Listener {
 
-/**
- * Factory for the DKCoins DataExtension.
- *
- * @author AuroraLS3
- * @author Vankka
- */
-public class DKCoinsExtensionFactory {
+    private final Caller caller;
 
-    private boolean isAvailable(String className) {
-        try {
-            Class.forName(className);
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
+    public DKCoinsBukkitDKCListener(Caller caller) {
+        this.caller = caller;
     }
 
-    private boolean isAvailable() {
-        return isAvailable("ch.dkrieger.coinsystem.core.CoinSystem");
+    @Override
+    public void register() {
+        Plugin plan = Bukkit.getPluginManager().getPlugin("Plan");
+        Bukkit.getPluginManager().registerEvents(this, plan);
     }
 
-    public Optional<DataExtension> createExtension() {
-        if (isAvailable()) {
-            return Optional.of(new DKCoinsExtension());
-        }
-        return Optional.empty();
+    @EventHandler
+    public void onPlayerCoinsChange(BukkitCoinPlayerCoinsChangeEvent event) {
+        CoinPlayer coinPlayer = event.getCoinPlayer();
+        caller.updatePlayerData(coinPlayer.getUUID(), coinPlayer.getName());
     }
 
-    public void registerListener(Caller caller) {
-        // Additional classes used to avoid NoClassDefFoundErrors
-        if (isAvailable("org.bukkit.event.EventHandler")) {
-            DKCBukkitListenerFactory.createBukkitListener(caller).register();
-        }
-        if (isAvailable("net.md_5.bungee.event.EventHandler")) {
-            DKCBungeeListenerFactory.createBungeeListener(caller).register();
-        }
+    @EventHandler
+    public void onPlayerColorSet(BukkitCoinPlayerColorSetEvent event) {
+        CoinPlayer coinPlayer = event.getPlayer();
+        caller.updatePlayerData(coinPlayer.getUUID(), coinPlayer.getName());
     }
 }

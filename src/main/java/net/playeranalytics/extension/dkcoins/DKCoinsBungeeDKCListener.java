@@ -22,40 +22,43 @@
  * SOFTWARE.
  */
 
-package com.djrapitops.extension;
+package net.playeranalytics.extension.dkcoins;
 
+import ch.dkrieger.coinsystem.bungeecord.event.ProxiedCoinPlayerCoinsChangeEvent;
+import ch.dkrieger.coinsystem.bungeecord.event.ProxiedCoinPlayerColorSetEvent;
 import ch.dkrieger.coinsystem.core.player.CoinPlayer;
-import ch.dkrieger.coinsystem.spigot.event.BukkitCoinPlayerCoinsChangeEvent;
-import ch.dkrieger.coinsystem.spigot.event.BukkitCoinPlayerColorSetEvent;
 import com.djrapitops.plan.extension.Caller;
-import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginManager;
+import net.md_5.bungee.event.EventHandler;
 
-public class DKCoinsBukkitDKCListener implements DKCListener, Listener {
+public class DKCoinsBungeeDKCListener implements DKCListener, Listener {
 
     private final Caller caller;
 
-    public DKCoinsBukkitDKCListener(Caller caller) {
+    public DKCoinsBungeeDKCListener(Caller caller) {
         this.caller = caller;
     }
 
     @Override
     public void register() {
-        Plugin plan = Bukkit.getPluginManager().getPlugin("Plan");
-        Bukkit.getPluginManager().registerEvents(this, plan);
+        PluginManager pluginManager = ProxyServer.getInstance().getPluginManager();
+        Plugin plugin = pluginManager.getPlugin("Plan");
+        pluginManager.registerListener(plugin, this);
     }
 
     @EventHandler
-    public void onPlayerCoinsChange(BukkitCoinPlayerCoinsChangeEvent event) {
+    public void onPlayerCoinsChange(ProxiedCoinPlayerCoinsChangeEvent event) {
         CoinPlayer coinPlayer = event.getCoinPlayer();
         caller.updatePlayerData(coinPlayer.getUUID(), coinPlayer.getName());
     }
 
     @EventHandler
-    public void onPlayerColorSet(BukkitCoinPlayerColorSetEvent event) {
+    public void onPlayerColorSet(ProxiedCoinPlayerColorSetEvent event) {
         CoinPlayer coinPlayer = event.getPlayer();
         caller.updatePlayerData(coinPlayer.getUUID(), coinPlayer.getName());
     }
+
 }

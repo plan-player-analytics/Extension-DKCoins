@@ -21,14 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package net.playeranalytics.extension.dkcoins;
 
-package com.djrapitops.extension;
+import com.djrapitops.plan.extension.DataExtension;
+import com.djrapitops.plan.extension.extractor.ExtensionExtractor;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
-import com.djrapitops.plan.extension.Caller;
+/**
+ * Test for the implementation of the new extension
+ *
+ * @author AuroraLS3
+ */
+class ExtensionImplementationTest {
 
-public class DKCBukkitListenerFactory {
+    private ExtensionExtractor extractor;
 
-    static DKCListener createBukkitListener(Caller caller) {
-        return new DKCoinsBukkitDKCListener(caller);
+    @BeforeEach
+    void prepareExtractor() {
+        DataExtension extension = new DKCoinsExtension();
+        extractor = new ExtensionExtractor(extension);
     }
+
+    @Test
+    @DisplayName("API is implemented correctly")
+    void noImplementationErrors() {
+        extractor.validateAnnotations();
+    }
+
 }

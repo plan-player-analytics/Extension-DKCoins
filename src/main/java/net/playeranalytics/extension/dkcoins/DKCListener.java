@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.djrapitops.extension;
+package net.playeranalytics.extension.dkcoins;
 
 public interface DKCListener {
     void register();

@@ -21,14 +21,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-package com.djrapitops.extension;
+package net.playeranalytics.extension.dkcoins;
 
 import com.djrapitops.plan.extension.Caller;
+import com.djrapitops.plan.extension.DataExtension;
 
-public class DKCBungeeListenerFactory {
+import java.util.Optional;
 
-    static DKCListener createBungeeListener(Caller caller) {
-        return new DKCoinsBungeeDKCListener(caller);
+/**
+ * Factory for the DKCoins DataExtension.
+ *
+ * @author AuroraLS3
+ * @author Vankka
+ */
+public class DKCoinsExtensionFactory {
+
+    private boolean isAvailable(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    private boolean isAvailable() {
+        return isAvailable("ch.dkrieger.coinsystem.core.CoinSystem");
+    }
+
+    public Optional<DataExtension> createExtension() {
+        if (isAvailable()) {
+            return Optional.of(new DKCoinsExtension());
+        }
+        return Optional.empty();
+    }
+
+    public void registerListener(Caller caller) {
+        // Additional classes used to avoid NoClassDefFoundErrors
+        if (isAvailable("org.bukkit.event.EventHandler")) {
+            DKCBukkitListenerFactory.createBukkitListener(caller).register();
+        }
+        if (isAvailable("net.md_5.bungee.event.EventHandler")) {
+            DKCBungeeListenerFactory.createBungeeListener(caller).register();
+        }
     }
 }
